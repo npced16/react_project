@@ -21,17 +21,39 @@ export interface ProductionStats {
   shipped: number;
 }
 
+// Todo 타입
+export interface Todo {
+  id: number;
+  text: string;
+  completed: boolean;
+}
+
 // Zustand Store 타입 정의
 interface StoreState {
   // 상태
   products: Product[];
   selectedProductType: ProductType | null;
 
+  // ZustandDemo용 상태
+  counter: number;
+  userName: string;
+  todos: Todo[];
+
   // 액션
   addProduct: (product: Omit<Product, 'id' | 'createdAt'>) => void;
   updateProduct: (id: number, updates: Partial<Product>) => void;
   deleteProduct: (id: number) => void;
   setSelectedProductType: (type: ProductType | null) => void;
+
+  // ZustandDemo용 액션
+  increment: () => void;
+  decrement: () => void;
+  resetCounter: () => void;
+  setUserName: (name: string) => void;
+  addTodo: (text: string) => void;
+  toggleTodo: (id: number) => void;
+  removeTodo: (id: number) => void;
+  getCompletedCount: () => number;
 
   // 계산된 값
   getProductsByType: (type: ProductType) => Product[];
@@ -70,6 +92,14 @@ export const useStore = create<StoreState>((set, get) => ({
     },
   ],
   selectedProductType: null,
+
+  // ZustandDemo 초기 상태
+  counter: 0,
+  userName: 'Guest',
+  todos: [
+    { id: 1, text: 'Zustand 학습하기', completed: false },
+    { id: 2, text: 'React Query 연동하기', completed: false },
+  ],
 
   // 액션 구현
   addProduct: (product) =>
@@ -123,5 +153,29 @@ export const useStore = create<StoreState>((set, get) => ({
       completed: state.products.filter((p) => p.status === 'completed').length,
       shipped: state.products.filter((p) => p.status === 'shipped').length,
     };
+  },
+
+  // ZustandDemo 액션 구현
+  increment: () => set((state) => ({ counter: state.counter + 1 })),
+  decrement: () => set((state) => ({ counter: state.counter - 1 })),
+  resetCounter: () => set({ counter: 0 }),
+  setUserName: (name) => set({ userName: name }),
+  addTodo: (text) =>
+    set((state) => ({
+      todos: [...state.todos, { id: Date.now(), text, completed: false }],
+    })),
+  toggleTodo: (id) =>
+    set((state) => ({
+      todos: state.todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      ),
+    })),
+  removeTodo: (id) =>
+    set((state) => ({
+      todos: state.todos.filter((todo) => todo.id !== id),
+    })),
+  getCompletedCount: () => {
+    const state = get();
+    return state.todos.filter((todo) => todo.completed).length;
   },
 }));

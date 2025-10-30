@@ -137,16 +137,6 @@ const ProductPage = () => {
     }
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'planning': return '계획 중';
-      case 'in-production': return '생산 중';
-      case 'completed': return '완료';
-      case 'shipped': return '출하';
-      default: return status;
-    }
-  };
-
   return (
     <div css={containerStyles}>
       <div css={headerStyles}>
